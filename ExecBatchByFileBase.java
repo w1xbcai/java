@@ -44,15 +44,44 @@ public abstract class ExecBatchByFileBase implements Taskable
     private String ftpServerIp = null;
     private String ftpServerPort = null;
     
+    private List<String> batchFileList = null;
+    private List<String> errorBatchFileList = null;
+    private List<String> succBatchFileList = null;
+    
+    //应该有一些关于批量的全局变量
+    
     @Override
     public boolean execute(TaskItem taskItem)
     {
         initBatchPara();
         
-        if (!checkRemoteFile())
+        if ((null == batchFileList) || (batchFileList.size() < 1))
         {
-            dealRemoteErrorFile();
-            return false;
+            return true;
+        }
+        for (String batchFile : batchFileList)
+        {
+        
+            if (!checkRemoteFile(batchFile))
+            {
+                dealRemoteErrorFile(batchFile);
+                continue;
+            }
+
+            if (!formatRemoteFileToBatch(batchFile))
+            {
+                if (dealRemoteFormatErrorFile(batchFile))
+                {
+                    continue;
+                }
+            }
+            
+            //这里应该会使用到一些批量相关的全局变量
+            addBatchTaskContextInfo();
+        
+            addBatchTaskExtendedInfo();
+        
+            startBatchTask();
         }
         
         
@@ -73,6 +102,8 @@ public abstract class ExecBatchByFileBase implements Taskable
         {
             throw new BESException("60107011001", "ExecBatchByFileBase getBatchFtpTool error");
         }
+        
+        batchFileList = getBatchFileList();
     }
 
     private BatchFtpService getBatchFtpTool()
@@ -101,6 +132,8 @@ public abstract class ExecBatchByFileBase implements Taskable
     {
         
     }
+    
+    //目前的检查项，1，重名。2，名称过长。3，名称含有特殊字符。4，内容格式不正确。
     
 
 }
