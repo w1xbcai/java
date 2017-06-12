@@ -51,8 +51,10 @@ public abstract class ExecBatchByFileBase implements Taskable
         
         if (!checkRemoteFile())
         {
-            
+            dealRemoteErrorFile();
+            return false;
         }
+        
         
         return false;
     }
