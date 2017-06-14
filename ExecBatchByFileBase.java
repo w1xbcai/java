@@ -86,15 +86,14 @@ public abstract class ExecBatchByFileBase implements Taskable
     
     private void dealOneFile(String batchFile)
     {
-        StringBuffer batchBuffer = null;
-        StringBuffer batchDescBuffer = null;
-        String fileId = null;
         if (!checkRemoteFile(batchFile))
         {
             dealRemoteErrorFile(batchFile);
             return;
         }
 
+        StringBuffer batchBuffer = new StringBuffer();
+        StringBuffer batchDescBuffer = new StringBuffer();
         if (!formatRemoteFileToBatch(batchFile, batchBuffer, batchDescBuffer))
         {
             if (dealRemoteFormatErrorFile(batchFile))
@@ -104,7 +103,7 @@ public abstract class ExecBatchByFileBase implements Taskable
         }
         
         //这里应该会使用到一些批量相关的全局变量
-        fileId = uploadBatchFile(batchFile, batchBuffer);
+        String fileId = uploadBatchFile(batchFile, batchBuffer);
         
         addBatchTaskContextInfo(fileId);
     
