@@ -1,18 +1,38 @@
 package com.huawei.bes.om.ctz.order1.batch.dropsubs.business;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
+import com.alibaba.fastjson.JSON;
+import com.huawei.bes.common.adapter.bdf.sequence.SequenceUtil;
+import com.huawei.bes.common.batchtask.configbatch.app.model.vo.BatchDefineDTO;
 import com.huawei.bes.common.config.ConfigHelper;
+import com.huawei.bes.common.context.ContextHelper;
 import com.huawei.bes.common.exception.BESException;
 import com.huawei.bes.common.log.BesLog;
 import com.huawei.bes.common.log.BesLogFactory;
 import com.huawei.bes.common.parse.FileParser;
 import com.huawei.bes.common.task.intf.TaskItem;
+import com.huawei.bes.common.utils.time.DateTimeHelper;
 import com.huawei.bes.common.utils.validate.ValidateUtils;
+import com.huawei.bes.oh.base.batch.schema.app.model.xmlvo.batchservice.BatchServiceInfoXMLVO;
+import com.huawei.bes.oh.base.batch.schema.app.model.xmlvo.batchtype.BatchExtParamInfoXMLVO;
+import com.huawei.bes.oh.biz.orderex4telecom.constant.OrderConstant.OrderCreateConsts;
+import com.huawei.bes.oh.biz.orderex4telecom.utils.SMEmployeeHelper;
+import com.huawei.bes.om.ctz.order.cz4colombiamobile1.vo.OmBatchOtherSysExEntity;
+import com.huawei.bes.om.ctz.order.cz4colombiamobile1.vo.OmBatchOtherSysExEntityDTO;
 import com.huawei.bes.om.ctz.order1.batch.common.utils.ExecBatchByFileBase;
 import com.huawei.bes.om.ctz.order1.batch.common.utils.FtpServicePool;
+import com.huawei.bes.om.ctz.order1.batch.createsubs.business.bo.OmBatchOtherSysBOImpService;
+import com.huawei.bes.om.ctz.order1.batch.dropsubs.constant.Batch4DropSubsConsts;
+import com.huawei.bes.sm.orgstaff.domain.employee.view.SMEmployeeDTO;
+import com.huawei.bes.sm.orgstaff.intf.SMOrgIntfBOService;
+import com.huawei.soa.bdf.integration.util.ServiceHelper;
+import com.huawei.soa.daf.util.DafJsonUtils;
 
 public class BatchDropSubs4SapTaskNew extends ExecBatchByFileBase
 {
@@ -226,4 +246,125 @@ public class BatchDropSubs4SapTaskNew extends ExecBatchByFileBase
         return true;
     }
 
+
+    @Override
+    protected void initBatchData()
+    {
+        
+        
+    }
+
+    /**
+     * 初始化上下文信息
+     * @param taskItem
+     */
+    private void initCommonContext(TaskItem taskItem)
+    {
+        //取定时任务配置的BeId和BizBeId
+        ContextHelper.getContextAccessor().setBeId(taskItem.getBeId());
+        ContextHelper.getContextAccessor().setBizBeId(taskItem.getBeId());
+        //其他上下文信息取默认操作员的，基线为101
+        String operator = ConfigHelper.getShareConfig().getString(OrderCreateConsts.DEFAULT_OPER_KEY);
+        ContextHelper.getContextAccessor().setOperator(operator);
+        SMEmployeeDTO employeeVO = SMEmployeeHelper.getEmployee(new BigDecimal(operator));
+        String channelType = this.getChannelType(employeeVO.getOrgId());
+        LOG.debug("#BatchDropSubs4SapTask channelType is", channelType);
+        ContextHelper.getContextAccessor().setChannelId(channelType);
+        ContextHelper.getContextAccessor().setChannelType(channelType);
+        ContextHelper.getContextAccessor().setDeptId(String.valueOf(employeeVO.getOrgId()));
+        ContextHelper.getContextAccessor().setBizDeptId(String.valueOf(employeeVO.getOrgId()));
+        ContextHelper.getContextAccessor().setLoginId(employeeVO.getEmployeeCode());
+        ContextHelper.getContextAccessor().setBeCode(taskItem.getBeId());
+        if (null != employeeVO.getbRegionId())
+        {
+            ContextHelper.getContextAccessor().setRegionId(employeeVO.getbRegionId().toString());
+        }
+        if (null != Locale.getDefault())
+        {
+            ContextHelper.getContextAccessor().setLocale(Locale.getDefault().toString());
+        }
+    }
+    
+    /**
+     * 根据orgId查询渠道类型
+     * @param orgId
+     * @return
+     */
+    private String getChannelType(BigDecimal orgId)
+    {
+        LOG.debug("#getChannelType orgId ", orgId);
+        SMOrgIntfBOService service = (SMOrgIntfBOService) ServiceHelper.getService(SMOrgIntfBOService.SERVICE_NAME);
+        String salesChannel = service.querySalesChannelByOperOrOrgId(null, orgId);
+        LOG.debug("#getChannelType return ", salesChannel);
+        return salesChannel;
+    }
+    
+    private void recordBatchInfo(String uploadLssFileName, String[] fileParseResult, long taskId)
+    {
+        OmBatchOtherSysBOImpService omBatchOtherSys = (OmBatchOtherSysBOImpService) ServiceHelper
+                .getService(OmBatchOtherSysBOImpService.SERVICE_NAME);
+        List<OmBatchOtherSysExEntityDTO> ombatch = new ArrayList<OmBatchOtherSysExEntityDTO>();
+        OmBatchOtherSysExEntityDTO omBatchOtherSysExEntity = new OmBatchOtherSysExEntityDTO();
+        omBatchOtherSysExEntity.setBatch4othersysid(new BigDecimal(SequenceUtil
+                .next(OmBatchOtherSysExEntity.VO_TYPE_NAME)));
+        omBatchOtherSysExEntity.setBatchno(new BigDecimal(taskId));
+        omBatchOtherSysExEntity.setFilename(uploadLssFileName.replaceFirst(".txt", ".csv"));
+        omBatchOtherSysExEntity.setBusinesscode(Batch4DropSubsConsts.BATCH_BUSINESS_CODE);
+        omBatchOtherSysExEntity.setStatus("0");
+        omBatchOtherSysExEntity.setStatusdate(DateTimeHelper.getNowDate());
+        omBatchOtherSysExEntity.setCreatedate(DateTimeHelper.getNowDate());
+        omBatchOtherSysExEntity.setExfield1(fileParseResult[0]);
+        ombatch.add(omBatchOtherSysExEntity);
+        omBatchOtherSys.insertOmBatchOtherSys(ombatch);
+    }
+    
+    private String buildDefDtoContext(BatchDefineDTO defDto)
+    {
+        LOG.debug("#BatchDropSubs4SapTask buildDefDtoContext begin");
+        BatchServiceInfoXMLVO batchServiceInfo = new BatchServiceInfoXMLVO();
+        batchServiceInfo.setBeId(new BigDecimal(ContextHelper.getContextAccessor().getBeId()));
+        batchServiceInfo.setCreateOperId(new BigDecimal(ContextHelper.getContextAccessor().getOperator()));
+        batchServiceInfo.setBusinessCode(Batch4DropSubsConsts.BATCH_BUSINESS_CODE);
+        batchServiceInfo.setRegionId(new BigDecimal(ContextHelper.getContextAccessor().getBeId()));
+        batchServiceInfo.setCreateDeptId(new BigDecimal(ContextHelper.getContextAccessor().getDeptId()));
+        batchServiceInfo.setSalesDepartId(new BigDecimal(ContextHelper.getContextAccessor().getDeptId()));
+
+        this.buildBatchExtParamInfo(batchServiceInfo);
+
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("#BatchDropSubs4SapTask buildDefDtoContext batchServiceInfo", JSON.toJSONString(batchServiceInfo));
+        }
+        String batchServiceJsonString = DafJsonUtils.marshal(batchServiceInfo);
+        LOG.debug("#BatchDropSubs4SapTask buildDefDtoContext batchServiceJsonString:", batchServiceJsonString);
+        String temp = "{\"BusinessCode\":\"" + defDto.getBusiCode() + "\",\"ReqHeader\":";
+        String temp2 = "}";
+        StringBuffer retString = new StringBuffer();
+        retString.append(temp).append(batchServiceJsonString).append(temp2);
+        LOG.debug("#BatchDropSubs4SapTask buildDefDtoContext retString:", retString.toString());
+        return retString.toString();
+    }
+
+    private void buildBatchExtParamInfo(BatchServiceInfoXMLVO batchServiceInfo)
+    {
+        LOG.debug("#BatchDropSubs4SapTask buildBatchExtParamInfo begin");
+        List<BatchExtParamInfoXMLVO> batchExtParamInfo = new ArrayList<BatchExtParamInfoXMLVO>();
+        batchServiceInfo.setBatchExtParamInfo(batchExtParamInfo);
+
+        BatchExtParamInfoXMLVO sendSms = new BatchExtParamInfoXMLVO();
+        batchExtParamInfo.add(sendSms);
+        sendSms.setParamName("SendSms");
+        sendSms.setParamValue(ConfigHelper.getShareConfig().getString("OM.BATCH.TLF.DROPSUBS_SMS_FLAG"));
+
+        BatchExtParamInfoXMLVO idle = new BatchExtParamInfoXMLVO();
+        batchExtParamInfo.add(idle);
+        idle.setParamName("idle");
+        idle.setParamValue("Y");
+
+        BatchExtParamInfoXMLVO accessChanelType = new BatchExtParamInfoXMLVO();
+        batchExtParamInfo.add(accessChanelType);
+        accessChanelType.setParamName("AccessChanelType");
+        accessChanelType.setParamValue(ContextHelper.getContextAccessor().getChannelType());
+        LOG.debug("#BatchDropSubs4SapTask buildBatchExtParamInfo end");
+    }
 }
