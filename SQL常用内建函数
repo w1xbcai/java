@@ -1,0 +1,27 @@
+函数名	作用	语法
+upper	转换为大写	select upper(column_name) from table_name;
+lower	转换为小写	select lower(column_name) from table_name;
+initcap	首字母大写	select initcap(column_name) from table_name
+length	取长度	select length(column_name) from table_name;
+replace	替换子串	select replace(column_name, substr, newsubstr) from table_name;
+substr	取子串	select substr(column_name, fromIndex, toIndex) from table_name;
+instr	取子串下标	select instr(column_name, substr) from table_name;
+round	四舍五入	select round(column_name) from table_name;
+trunc	截取值	select trunc(column_name) from table_name;
+mod	取模	select mod(column_name) from table_name;
+floor	向下取整	select floor(column_name) from table_name;
+ceil	向上取整	select ceil(column_name) from table_name;
+avg	取平均值	select avg(column_name) from table_name;
+max	取最大值	select max(column_name) from table_name;
+min	取最小值	select min(column_name) from table_name;
+count	取总行数	select count(*) from table_name;
+sum	取总和	select sum(column_name) from table_name;
+last_day	取当月最后一天此时	select last_day(column_name) from table_name;
+next_day	指定时间下个星期X所在的日期	select next_day(column_name, X) from table_name;
+add_months	指定时间X月后所在的日期	select add_months(column_name, X) from table_name;
+months_between	取两个日期间的月份差	select months_between(date, column_name) from table_name;
+to_char	按格式转换为字符	select to_char(column_name, format) from table_name;
+to_number	转换为数字	select to_number(column_name) from table_name;
+nvl	若为null则替换为指定值	select nvl(column_name, replace_with) from table_name;
+decode	转码	select decode(column_name, search_1, result_1, ..., 
+search_n, result_n, default) from table_name;
