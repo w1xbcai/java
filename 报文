@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CreateOrderRequestXMLVO>
+    <order partyRoleType="C" partyRoleId="318830000066785" beId="101" accessChanelType="601" salesDepartId="18100001" createDeptId="18100001" createOperId="170306514204310045" anonymousFlag="N" orderType="N" reqApplyTime="2017-07-13T09:53:21.852+08:00" businessCode="ChangeProduct" invoiceNo="35037" traceId="14999105864491880430" traceFlag="0">
+        <extInfo>
+            <extNodeInfo extNodeCode="InvVersion" extXmlString="11"/>
+            <extNodeInfo extNodeCode="BUSI_EXT_INFO" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;BusinessExtInfoXMLVO busiNotifyFlag=&quot;Y&quot; authenticateType=&quot;AuthCheckZ&quot; authenticateTime=&quot;2017-07-13T09:52:40.002+08:00&quot;/&gt;
+"/>
+            <extNodeInfo extNodeCode="IS_SEND_INVOICE_EMAIL" extXmlString="Y"/>
+            <extNodeInfo extNodeCode="MENUID" extXmlString="60131006"/>
+            <extNodeInfo extNodeCode="IDCardCheckinType"/>
+        </extInfo>
+    </order>
+    <productOrderLine businessCode="ChangeProduct" mainProductId="1000000" operationType="M" productInstId="518830000052612" ownerType="S" ownerId="518830000052612" serviceNumber="1880048564">
+        <orderItem relaOrderItemId="100000004" itemType="O" itemId="1068" actionType="A" quantity="1">
+            <orderItemInfo relaOrderItemId="100000005" itemType="P" itemId="1000045" actionType="A" quantity="1">
+                <orderItemRelation refRelaOrderItemId="100000004" relationType="P_O"/>
+                <extInfo/>
+            </orderItemInfo>
+            <orderItemRelation relatedInstType="O" relatedInstId="918830001272272" relationType="S"/>
+            <orderItemTerm actionType="A" termCode="effectiveMode" termContent="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;EffectiveModeXMLVO&gt;
+    &lt;effectiveDetail&gt;
+        &lt;mode&gt;I&lt;/mode&gt;
+        &lt;durationUnit&gt;&lt;/durationUnit&gt;
+        &lt;durationValue&gt;0&lt;/durationValue&gt;
+        &lt;isDefault&gt;Y&lt;/isDefault&gt;
+        &lt;primaryOfferingId&gt;ALL&lt;/primaryOfferingId&gt;
+        &lt;businessCode&gt;ChangeProduct&lt;/businessCode&gt;
+        &lt;fixStartDate&gt;2017-07-13 09:53:11&lt;/fixStartDate&gt;
+    &lt;/effectiveDetail&gt;
+&lt;/EffectiveModeXMLVO&gt;
+"/>
+            <orderItemTerm actionType="A" termCode="contractDuration" termContent="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ContractDurationsXMLVO/&gt;
+"/>
+            <orderItemProp actionType="A" propId="601030800124" propCode="C_LIST_CODE" complexFlag="N" sValue="1" entityType="O" entityRoute="O1068"/>
+            <orderItemProp actionType="A" propId="601030081" propCode="C_TRIBE_CODE" complexFlag="N" sValue="1" entityType="O" entityRoute="O1068"/>
+            <orderItemProp actionType="A" propId="601030082" propCode="C_SUB_TRIBE_CODE" complexFlag="N" sValue="TribuJovenes" entityType="O" entityRoute="O1068"/>
+            <orderItemProp actionType="A" propId="601030800101" propCode="C_MAX_MEMBER_OF_GROUP" complexFlag="N" sValue="100" entityType="O" entityRoute="O1068.P1000045"/>
+            <orderItemProp actionType="A" propId="601030800102" propCode="C_PRODUCT_FEATURE" complexFlag="N" sValue="002" entityType="O" entityRoute="P1000045"/>
+            <orderItemProp actionType="A" propId="601030800103" propCode="C_TYPE_FN_GROUPS" complexFlag="N" sValue="3" entityType="O" entityRoute="O1068.P1000045"/>
+            <orderItemProp actionType="A" propId="601030800104" propCode="C_NETTYPE_FN_GROUPS" complexFlag="N" sValue="onnet" entityType="O" entityRoute="O1068.P1000045"/>
+            <orderItemProp actionType="A" propId="601030039" propCode="PM_PROVISIONING" complexFlag="N" sValue="0" entityType="O" entityRoute="P1000045"/>
+            <orderItemProp actionType="A" propId="601030033" propCode="PM_PRODUCTO_TELCO" complexFlag="N" sValue="Y" entityType="O" entityRoute="P1000045"/>
+            <orderItemProp actionType="A" propId="1468410657595723274" propCode="C_FEATURE_HIS_ADD_TIMES" complexFlag="N" sValue="0" entityType="O" entityRoute="O1068"/>
+            <orderItemProp actionType="A" propId="1468411118313855481" propCode="C_FEATURE_HIS_DEL_TIMES" complexFlag="N" sValue="0" entityType="O" entityRoute="O1068"/>
+        </orderItem>
+    </productOrderLine>
+</CreateOrderRequestXMLVO>
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<SubscriptionOperRequestXMLVO businessSeq="1012017071300704176" businessCode="ChangeProduct">
+    <offering>
+        <offeringInstInfo opCode="A" actionType="A" offeringInstId="101991010341073" offeringId="1068" offeringCode="1068_" subscriberId="518830000052612" ownerPartyRoleType="C" ownerPartyRoleId="318830000066785" purchaseSeq="574573" primaryFlag="N" bundleFlag="N" applyObjType="S" applyObjId="518830000052612" offeringType="0" status="2" statusDetail="0000" statusDate="2017-07-13T09:53:23.095+08:00" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" salesChannelType="601" salesChannelId="18100001" beId="101" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" exField3="I" exField9="100000004" exField17="" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453692" offeringInstId="101991010341073" propId="601030800124" propCode="C_LIST_CODE" complexFlag="N" propValue="1" entityType="O" entityRoute="O1068" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453693" offeringInstId="101991010341073" propId="601030081" propCode="C_TRIBE_CODE" complexFlag="N" propValue="1" entityType="O" entityRoute="O1068" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453694" offeringInstId="101991010341073" propId="601030082" propCode="C_SUB_TRIBE_CODE" complexFlag="N" propValue="TribuJovenes" entityType="O" entityRoute="O1068" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453695" offeringInstId="101991010341073" propId="601030800101" propCode="C_MAX_MEMBER_OF_GROUP" complexFlag="N" propValue="100" entityType="O" entityRoute="O1068.P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453696" offeringInstId="101991010341073" propId="601030800103" propCode="C_TYPE_FN_GROUPS" complexFlag="N" propValue="3" entityType="O" entityRoute="O1068.P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453697" offeringInstId="101991010341073" propId="601030800104" propCode="C_NETTYPE_FN_GROUPS" complexFlag="N" propValue="onnet" entityType="O" entityRoute="O1068.P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453698" offeringInstId="101991010341073" propId="1468410657595723274" propCode="C_FEATURE_HIS_ADD_TIMES" complexFlag="N" propValue="0" entityType="O" entityRoute="O1068" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAttr opCode="A" actionType="A" propInstId="90000000453699" offeringInstId="101991010341073" propId="1468411118313855481" propCode="C_FEATURE_HIS_DEL_TIMES" complexFlag="N" propValue="0" entityType="O" entityRoute="O1068" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstRela opCode="A" actionType="A" relationId="90000000217011" srcOfferingInstId="101991010341073" srcOfferingId="1068" destOfferingInstId="918830001272272" destOfferingId="1013" relaType="S" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAgreementTerm opCode="A" actionType="A" termId="1000441143" offeringInstId="101991010341073" termCode="effectiveMode" termType="0" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createOperId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAgreementTerm opCode="A" actionType="A" termId="1000441144" offeringInstId="101991010341073" termCode="contractDuration" termType="0" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createOperId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <offerInstAgreementTerm opCode="A" actionType="A" termId="1000441145" offeringInstId="101991010341073" termCode="contractDuration" termType="0" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createOperId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <termDuration opCode="A" actionType="A" offeringInstId="101991010341073" termDurationId="310044001" termId="1000441144" durationId="1" durationType="C" startTime="2017-07-13T09:53:21.972+08:00" endTime="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createOperId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574573"/>
+        <extNode extIdType="OA" extId="101991010341073" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000453692&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574573"/>
+        <extNode extIdType="OA" extId="101991010341073" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000453693&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574573"/>
+        <extNode extIdType="OA" extId="101991010341073" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000453694&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574573"/>
+        <extNode extIdType="OA" extId="101991010341073" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000453695&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574573"/>
+        <extNode extIdType="OA" extId="101991010341073" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000453696&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574573"/>
+        <extNode extIdType="OA" extId="101991010341073" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000453697&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574573"/>
+    </offering>
+    <plan/>
+    <product>
+        <prodInstInfo opCode="A" actionType="A" prodInstId="1019910000000436091" ownerPartyRoleType="C" ownerPartyRoleId="318830000066785" prodInstAlias="2" prodId="1000045" prodCode="1000045" purchaseSeq="574574" productLineId="1" primaryFlag="N" compositeFlag="2" rootProdInstFlag="Y" prodType="5" status="2" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" statusDate="2017-07-13T09:53:23.114+08:00" createOrderId="200000006291646785" salesChannelType="601" salesChannelId="18100001" beId="101" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" subscriberId="518830000052612" exField9="100000005" orderItemId="574574"/>
+        <prodInstAttrInfo opCode="A" actionType="A" propInstId="90000000601607" prodInstId="1019910000000436091" propId="601030800101" propCode="C_MAX_MEMBER_OF_GROUP" complexFlag="N" propValue="100" offeringInstId="101991010341073" entityRoute="O1068.P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" modifyTime="2017-07-13T09:53:23.117+08:00" orderItemId="574574"/>
+        <prodInstAttrInfo opCode="A" actionType="A" propInstId="90000000601608" prodInstId="1019910000000436091" propId="601030800102" propCode="C_PRODUCT_FEATURE" complexFlag="N" propValue="002" entityRoute="P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574574"/>
+        <prodInstAttrInfo opCode="A" actionType="A" propInstId="90000000601609" prodInstId="1019910000000436091" propId="601030800103" propCode="C_TYPE_FN_GROUPS" complexFlag="N" propValue="3" offeringInstId="101991010341073" entityRoute="O1068.P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" modifyTime="2017-07-13T09:53:23.117+08:00" orderItemId="574574"/>
+        <prodInstAttrInfo opCode="A" actionType="A" propInstId="90000000601610" prodInstId="1019910000000436091" propId="601030800104" propCode="C_NETTYPE_FN_GROUPS" complexFlag="N" propValue="onnet" offeringInstId="101991010341073" entityRoute="O1068.P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" modifyTime="2017-07-13T09:53:23.117+08:00" orderItemId="574574"/>
+        <prodInstAttrInfo opCode="A" actionType="A" propInstId="90000000601611" prodInstId="1019910000000436091" propId="601030039" propCode="PM_PROVISIONING" complexFlag="N" propValue="0" entityRoute="P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574574"/>
+        <prodInstAttrInfo opCode="A" actionType="A" propInstId="90000000601612" prodInstId="1019910000000436091" propId="601030033" propCode="PM_PRODUCTO_TELCO" complexFlag="N" propValue="Y" entityRoute="P1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574574"/>
+        <extNode extIdType="PA" extId="1019910000000436091" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000601607&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574574"/>
+        <extNode extIdType="PA" extId="1019910000000436091" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000601608&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574574"/>
+        <extNode extIdType="PA" extId="1019910000000436091" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000601609&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574574"/>
+        <extNode extIdType="PA" extId="1019910000000436091" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000601610&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574574"/>
+        <extNode extIdType="PA" extId="1019910000000436091" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000601611&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574574"/>
+        <extNode extIdType="PA" extId="1019910000000436091" extNodeCode="INF_ATTR_SYNC" extXmlString="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;InfAttrSyncInfoXMLVO&gt;
+    &lt;infAttrSync attrInstId=&quot;90000000601612&quot;/&gt;
+&lt;/InfAttrSyncInfoXMLVO&gt;
+" orderItemId="574574"/>
+    </product>
+    <prodStruct/>
+    <prodOffer>
+        <prodOfferRelaInfo opCode="A" relationId="1000427088" actionType="A" offeringInstId="101991010341073" offeringId="1068" prodInstId="1019910000000436091" prodId="1000045" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" createOrderId="200000006291646785" createProleId="170306514204310045" createDeptId="18100001" createTime="2017-07-13T09:53:21.972+08:00" orderItemId="574574"/>
+    </prodOffer>
+    <prodUser/>
+    <subscriptionRole/>
+    <group>
+        <groupSubscriber groupId="10199101000293022" groupName="TRIBU JOVENES" groupType="5" prodId="1000045" prodCode="1000045" maxGroupMember="20" status="2" statusDetail="00000000" effDate="2017-07-13T09:53:21.972+08:00" expDate="2100-12-31T00:00:00+08:00" statusDate="2017-07-13T09:53:23.115+08:00" createOrderId="200000006291646785" salesChannelType="601" salesChannelId="18100001" beId="101" createPartyRoleId="170306514204310045" createDptId="18100001" createTime="2017-07-13T09:53:23.115+08:00" remark="" opCode="A" actionType="A" ownerPartyRoleType="C" ownerPartyRoleId="318830000066785" subsId="518830000052612" prodInstId="1019910000000436091" orderItemId="574574"/>
+    </group>
+</SubscriptionOperRequestXMLVO>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<CreateOrderFlowInfoXMLVO orderId="200000006291646785" orderType="O" partyRoleType="C" partyRoleId="318830000066785" status="OS00" wishExeTime="2017-07-13T09:53:21.972+08:00" orderCreateTime="2017-07-13T09:53:21.972+08:00" priority="1" beId="101" dueDate="2017-07-13T09:53:23.429+08:00" channelId="601" traceId="14999105864491880430000order0000000000" traceFlag="0">
+    <orderFlowTemplate templateId="513003">
+        <templateParam paramName="beId" paramValue="101" dataType="STRING"/>
+        <templateParam paramName="bizBeId" paramValue="101" dataType="STRING"/>
+        <templateParam paramName="beCode" paramValue="101" dataType="STRING"/>
+        <templateParam paramName="deptId" paramValue="18100001" dataType="STRING"/>
+        <templateParam paramName="bizDeptId" paramValue="18100001" dataType="STRING"/>
+        <templateParam paramName="operatorId" paramValue="170306514204310045" dataType="STRING"/>
+        <templateParam paramName="channelId" paramValue="601" dataType="STRING"/>
+        <templateParam paramName="orderId" paramValue="200000006291646785" dataType="BIGDECIMAL"/>
+        <templateParam paramName="busiCode" paramValue="ChangeProduct" dataType="STRING"/>
+        <templateParam paramName="wishExecTime" paramValue="1499910801972" dataType="TIMESTAMP"/>
+    </orderFlowTemplate>
+    <extParameter paramName="ORDER_TRACE_LOG_ID" paramValue="1880048564" dataType="STRING"/>
+    <extParameter paramName="SERVICE_CALL_CHAIN" paramValue="BusiNo=1012017071300704177,SubID=518830000052612,ProdCodes=,ProdCates=" dataType="STRING"/>
+    <extParameter paramName="TRACE_CONTEXT_SERVICE_CALL_CHAIN" paramValue="BusiNo=1012017071300704178,SubID=518830000052612,ProdCodes=,ProdCates=" dataType="STRING"/>
+    <extParameter paramName="CreateNode" paramValue="1001069519118280" dataType="STRING"/>
+    <extParameter paramName="InvVersion" paramValue="11" dataType="STRING"/>
+    <extParameter paramName="BUSI_EXT_INFO" paramValue="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;BusinessExtInfoXMLVO busiNotifyFlag=&quot;Y&quot; authenticateType=&quot;AuthCheckZ&quot; authenticateTime=&quot;2017-07-13T09:52:40.002+08:00&quot;/&gt;
+" dataType="STRING"/>
+    <extParameter paramName="IS_SEND_INVOICE_EMAIL" paramValue="Y" dataType="STRING"/>
+    <extParameter paramName="MENUID" paramValue="60131006" dataType="STRING"/>
+    <extParameter paramName="IDCardCheckinType"/>
+    <extParameter paramName="GRETA_INVOICE_NUMBER" paramValue="35037" dataType="STRING"/>
+    <extParameter paramName="CONTACT_LOG_ID" paramValue="1000650067" dataType="STRING"/>
+    <extParameter paramName="OperatorId" paramValue="170306514204310045"/>
+    <extParameter paramName="businessCode" paramValue="ChangeProduct"/>
+    <extParameter paramName="channelId" paramValue="601"/>
+</CreateOrderFlowInfoXMLVO>
