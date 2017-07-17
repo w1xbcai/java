@@ -1,0 +1,297 @@
+Java虚拟机性能参数调优参考
+
+
+目录
+1 概述	2
+2 JAVA虚拟机运行机制概览	2
+2.1 运行时分析	2
+2.2 垃圾收集和线程同步	3
+3 JAVA虚拟机参数分类说明	5
+3.1 Java虚拟机标准参数	5
+3.2 Java虚拟机扩展参数	7
+4 JAVA应用性能测试调优经验总结	10
+4.1 GC调优参数的使用	10
+4.2 JIT调优参数的使用	11
+4.3 Java线程调优参数的使用	11
+5 结束语	12
+6 参考文献	12
+
+Java虚拟机性能参数调优指导书 
+关键词：Java、垃圾收集、虚拟机、即时编译
+摘 要： 随着JAVA在应用系统级的项目开发中的使用越来越广泛，虚拟机、垃圾收集、热点编译、J2EE等新技术层出不穷，JAVA作为系统级开发的一个选择的优势也越来越明显，在此同时其不能完全编译、垃圾收集等与生俱有的特征也使得JAVA备受争议的“慢”得到更多的关注。本文通过对JAVA虚拟机的运行机理的分析，以及JAVA虚拟机参数使用说明等描述，试图使读者能够更好的运行他的基于JAVA的应用系统，以最小的代价换取最大的收益。
+缩略语清单：
+缩略语	英文全名	中文解释
+JAVA	 	SUN公司发明的一种语言
+JVM	Java Virtual Machine	JAVA虚拟机
+GC	Garbage Collection	垃圾收集
+HotSpot	 	Java虚拟机内部的一种热点编译技术
+JIT	Just-In-Time	即时编译技术
+ 	 	 
+ 	 	 
+	1 概述
+Java在大行其道的同时也在为自己与生俱来的缺陷不断的努力着，我们有理由相信Java的开发设计者们真是一群天才。构成Java技术的基石就是JVM的虚拟机技术，这时的Java已经不再是一门简单的语言，而是语言、开发包JDK与虚拟机的完美结合，而这里面的虚拟机则是融合了编译技术、CPU技术的Java存在的基础所在。既然那么多的优秀的人为提升虚拟机性能做了那么多的工作，我们有什么理由不去充分利用这些宝贵的资源呢？本文就是试图从原理分析到参数应用上来帮助读者更大的发挥Java虚拟机的性能极限，使这样一个优秀的产品更好地为我们服务。
+	2 JAVA虚拟机运行机制概览
+	2.1 运行时分析
+首先让我们来看看所谓的Java虚拟机在运行起来后是什么样子的，从外面来看一个Java虚拟机的运行实例就是一个运行着的Java进程，Java进程在启动过程中做了如下工作，一、根据环境变量的设置或者Java进程的命令行参数将Java Class字节码加载到内存中，这样的Java字节码是Java虚拟机所能够识别的虚拟机指令的集合，Java虚拟机在解释执行字节指令的同时，根据某些代码的使用频率，将其中一部分字节码翻译成机器能够识别的二进制指令保存在内存中，在以后对这部分代码的调用，则由Java虚拟机的代码控制CPU直接执行内存中的这部分二进制指令，这个就是Java虚拟机的热点编译技术。而在早期的Java虚拟机实现中是采用全部字节程序解释执行的方式，后来发展了Java静态编译技术，这种技术是在Java程序编译成字节码后，由一个本地编译器将这些字节码编译成二进制可执行文件，这种编译技术不利于程序的移植。再后来发展的Java的动态编译技术，这时的编译过程是在Java装载字节码文件时进行的，而此时的问题是Java在启动时需要花费很长的时间来编译这些字节码。直到最后流行的Hotspot技术的出现，此时编译仅仅运行于少部分代码。按照80/20的原则，程序的百分之80的时间仅仅运行其百分之20的代码，这样一个能够平衡启动时间、移植性的中间方法解决了人们的大部分问题。
+之后，让我们看看Java虚拟机的内部体系结构，从下面的体系机构图来看，Java的Class字节码文件经由类加载子系统加载到内存中时，虚拟机根据文件内容将类的方法和数据加载到称为方法区的地方，堆是用来为运行时类实例提供存放场所的地方，这样的堆也称之为对象堆空间。而Java栈和PC计数器则是为了Java线程而设计的，每一个Java线程一旦创建，它都将得到一个属于他自己的PC计数器（程序计数器指针，类似于CPU中的IP指令指针计数器）以及一个线程栈，在新版本Java Hotspot VM中是没有本地方法栈和线程栈之分的，只有一个线程栈的模块。这样每个线程的运行都是在属于自己栈空间内的，而所有的线程则共享着一个堆空间。当然在线程实现上不同的Java虚拟机的内部实现可能各有不同，有的自是直接将Java线程和操作系统内核线程绑定起来的，在虚拟机进程内部创建一个Java线程虚拟机就会请求操作系统为该一个进程创建一个内核线程，将线程之间的调度交给了操作系统内核来完成。而在早期的Java虚拟机一些实现中，Java线程对于操作系统来说是不可见，而是由应用层来完成线程调度，对于操作系统来说仅仅是一个单线程的进程。
+ 
+图1 Java虚拟机的内部体系结构
+Java虚拟机在运行时，由主线程开始解释执行类文件中的指令，主线程在自己的线程栈中存放临时变量、参数变量等，一旦碰到生成新对象的new操作时，就会在堆空间内申请一块内存存放该类对象，而一旦程序从一个方法中退出后（退回到一个方法栈的栈底），虚拟机程序并不会立即释放Heap空间内的这块内存，这就是与C/C++程序所不同的地方，因为C/C++程序被加载程序的操作系统调用装载到内存中之后，程序的内存是由操作系统为之分配的4G的虚拟内存空间，而堆空间的使用也是由程序的内存分配子系统（malloc）来完成的，而这个子系统仅仅是向程序员提供了申请/释放内存的调用接口，查看C/C++编译器生成的汇编代码你会发现，如果你在一个函数中申请了一块内存，而没有在函数退出的地方没有释放的话，这块内存则会永远放在堆中，而对于你在函数中生明的类变量对象来说（非new来申请的指针对象），这个类对象的内存是在程序栈空间中分配的，一旦这个函数释放则对象空间自动释放，这样的内存泄漏正是Java竭力避免的，Java从发明之初就是考虑着如何将大部分应用程序员从繁重的内存管理工作中解脱出来，而由Java虚拟机使用称之为GC垃圾收集的模块来完成内存空间的管理。Java虚拟机在启动时会根据-Xms的参数值向操作系统一次性申请一块内存空间作为自己的堆，而随着后续程序的运行中内存需求的增加，则再向操作系统申请更多的内存加到自己的堆空间中。这个堆空间的最大值就是由-Xms指定的。一旦Java虚拟机发现应用程序申请的内存超过了堆内存的最大空间的话，Java就会抛出一个超出堆空间的异常。而当虚拟机在启动时如果申请不到足够的内存的话，则同样会抛出一个异常，启动失败。所有这些工作都是由Java虚拟机的内存管理模块来完成的，而Java的内存管理功能中最俱特色和重要的垃圾收集功能GC则是按照下面机制运行的。
+	2.2 垃圾收集和线程同步
+Java的垃圾收集器就像一个兢兢业业的仓库保管员，他管理着虚拟机堆空间的清扫工作，接着上面描述的，一旦一个函数退出了它的栈，在该函数内声明的一个Java对象则会留在Java堆空间内，那么垃圾收集器会不会立即将这个对象的空间释放呢？答案是否定的，垃圾收集器只有在当堆空间占用到了一定程度时，或者程序比较空闲时才释放那些不再使用（遗漏）的对象空间。如果此时程序堆空间的使用不是很大，而程序又比较忙的话，则垃圾收集器就不会运行。当然程序员也可以通过在程序中调用JDK接口来申请虚拟机主动执行垃圾收集器。而垃圾收集器的工作和C/C++语言中明确的释放（delete）对象比起来有一个潜在的缺点，那就是，在垃圾收集的Java应用中程序员对于安排CPU时间进行内存回收缺乏控制，想要精确地预测出何时（甚至是否）进行垃圾收集、收集需要多长时间，基本上是不可能的。在早期的垃圾收集策略中，对象引用计数收集算法是最先被采用的，堆中的每个对象都有一个引用计数，当这个对象被赋值给一个变量，则该引用计数器加1，当一个对象超过了生命期或者被重新赋值的话，对象的引用减一，任何引用计数为0的对象都可以被当作垃圾收集。这样的算法一个固有的缺陷就是无法处理循环应用的情况，而且计数的增减也会带来开销。现代的Java虚拟机的实现中采用了压缩收集算法、拷贝收集算法、按代收集算法等，按代收集的算法是为了解决GC在回收对象空间的优先顺序的问题，在按代收集的算法中，GC总是优先回收那些短暂年幼的对象，而非一些寿命较长的对象。JVM堆被划分成多个小的区域——子堆，每个子堆分别为不同“代”的对象服务，如果一个年幼的对象经历过好几次垃圾收集后都没有别收集掉，则它就变成一个年老的对象，会被转移到另一个存放寿命更长的对象的堆中。一切的改进就是本着让垃圾收集更快、更高效的目标进行的。在Java的语法里面，一个对象可以拥有终结方法，该方法是在垃圾收集器释放对象前必须执行的，程序员可以通过使用该方法来实现一些应用级清扫工作。
+可以在编程语言级支持多线程是Java语言的一大优势，这种支持主要集中在同步上。对于编译型语言C/C++来说，在语言级是没有多线程的概念的，程序员只能通过调用操作系统API来实现多线程应用。而在Java中线程的支持是通过一些预先定义好的关键字来实现，而且JDK开发包也为用户提供了线程创建、使用的很好的封装，程序员仅仅想使用普通的类一样继承一个特定的接口Runable或者继承一个已有的简单线程类Thread即可创建并使用Java的线程功能了。应用级线程一旦创建后，就交给了JVM管理，JVM内部维护这所有应用级以及JVM内部线程列表，用户可以通过指定JVM启动的参数来设置JVM的线程管理方式，是由JVM自己管理内部线程、完成线程通过工作，还是将应用线程直接绑到操作系统内核线程，并且由操作系统内核来完成线程同步等管理工作。下面会对这些参数一一进行介绍。
+Java内部的线程同步管理或线程调度是通过一种监视器的技术来实现的，基本上的原理如下，我们将监视器比喻成一座建筑，而其中一些特别的房间里面的数据在同一时间只能有一个“人”
+——线程能够访问，当一个线程进入这个房间到它离开之前，它可以独占的操作其中的数据，我们将线程进入这个建筑叫做“进入监视器”，线程进入这个特殊的房间叫做“获得监视器”，离开房间时叫“释放监视器”，离开建筑时叫做“退出监视器”。监视器除了监控一些数据之外，还可以监控一些代码，这样的代码叫做监视区域，在同一监视器中，一块监视区域的代码在同一时间只能够被一个线程所访问。同步数据（类）或同步代码在Java程序中用Synchronized参数标明就可以了，从Java字节码编译器生成的虚拟机指令序列来看，编译器将操作指令monitorenter、monitorexit添加到具有Synchronized关键字的方法开始和结尾，而所有对具有Synchronized关键字的类数据的操作前后也都添加了monitorenter、monitorexit操作指令，这样在虚拟机指令序列（类文件代码）时JVM会调用monitorenter、monitorexit指令完成线程间的同步控制。
+ 
+图2 Java虚拟机线程同步监视器
+	3 JAVA虚拟机参数分类说明
+java参数共分为三类
+其一是标准参数 （-），所有的JVM实现都必须实现这些参数的功能，而且向后兼容；
+其二是非标准参数 （-X），默认jvm实现这些参数的功能，但是并不保证所有jvm实现都满足，且不保证向后兼容；
+其三是非Stable参数 （-XX），此类参数各个jvm实现会有所不同，将来可能会随时取消，需要慎重使用；
+	3.1 Java虚拟机标准参数
+所谓的Java虚拟机标准参数指的就是所有的虚拟机实现都应该支持的参数，这部分参数基本上都是对虚拟机基本能力的调整，包括对运行模式、垃圾收集信息显示、显示版本信息、断言开关等：
+参数	使用说明	备注
+-d32
+-d64	指明该Java VM是运行与32位环境还是64位环境，默认是运行在32位环境下的，如果是配置了64位模式则需要操作系统也必须是64位的，当然CPU更需要是64位的。另外如果我们选择了-server参数，则就暗含了64位模式。	因为64的CPU兼容32位操作系统，而64位操作系统又是兼容32位执行程序
+-client
+-server	设置该JVM运行与Client 或者Server Hotspot模式，这两种模式从本质上来说是在JVM中运行不同的JIT（运行时编译模块）代码，并且两者在JVM内部的接口是一致的。客户端模式优化的是系统启动时间更快，而服务端模式的优化则更关注与系统的整体性能。一般来说Client选项用于GUI的应用，Server选项多用于后台服务器应用。
+-client 
+设置jvm使用client模式，特点是启动速度比较快，但运行时性能和内存管理效率不高，通常用于客户端应用程序或者PC应用开发和调试。
+-server 
+设置jvm使server模式，特点是启动速度比较慢，但运行时性能和内存管理效率很高，适用于生产环境。在具有64位能力的jdk环境下将默认启用该模式，而忽略-client参数。 	另外两者在编译策略、垃圾收集策略、堆使用上也有所不同
+-hotspot	在Hotspot类型的JVM中缺省使用，缺省为Client Hotspot模式。	 
+-agentlib:libname[=options]	用于装载本地lib包；
+其中libname为本地代理库文件名，默认搜索路径为环境变量PATH中的路径，options为传给本地库启动时的参数，多个参数之间用逗号分隔。在 Windows平台上jvm搜索本地库名为libname.dll的文件，在linux上jvm搜索本地库名为libname.so的文件，搜索路径环境变量在不同系统上有所不同，比如Solaries上就默认搜索LD_LIBRARY_PATH。
+比如：-agentlib:hprof
+用来获取jvm的运行情况，包括CPU、内存、线程等的运行数据，并可输出到指定文件中；windows中搜索路径为JRE_HOME/bin /hprof.dll。	
+-agentpath:pathname[=options] 	按全路径装载本地库，不再搜索PATH中的路径；其他功能和agentlib相同；更多的信息待续，在后续的JVMTI部分会详述。	
+-cp
+-classpath	指明JVM启动时要加载的类文件路径，Java虚拟机进程在启动时就会按照该参数后面指明的路径查找*.zip、*.jar、*.class文件，然后将这些包中的类文件加载到内存中。告知jvm搜索目录名、jar文档名、zip文档名，之间用分号;分隔；使用-classpath后jvm将不再使用CLASSPATH中的类搜索路径，如果-classpath和CLASSPATH都没有设置，则jvm使用当前路径(.)作为类搜索路径。
+jvm搜索类的方式和顺序为：Bootstrap，Extension，User。
+Bootstrap中的路径是jvm自带的jar或zip文件，jvm首先搜索这些包文件，用 System.getProperty("sun.boot.class.path")可得到搜索路径。
+Extension是位于JRE_HOME/lib/ext目录下的jar文件，jvm在搜索完Bootstrap后就搜索该目录下的jar文件，用 System.getProperty("java.ext.dirs")可得到搜索路径。
+User搜索顺序为当前路径.、CLASSPATH、-classpath，jvm最后搜索这些目录，用 System.getProperty("java.class.path")可得到搜索路径。	JVM加载类文件的顺序是
+-D<name>=<value>	设置系统属性的值，该参数是的设计是为了满足Java应用程序员与JVM进行参数传递的手段之一，另一种是通过应用级参数（argument）来实现。	Java程序员可以在程序内调用system.getProperty来获取用户通过-D参数传进来的系统属性信息。而命令行参数就是是JVM传递给main函数的调用参数
+-Dproperty=value	设置系统属性名/值对，运行在此jvm之上的应用程序可用System.getProperty("property")得到value的值。
+如果value中有空格，则需要用双引号将该值括起来，如-Dname="space string"。
+该参数通常用于设置系统级全局变量值，如配置文件路径，以便该属性在程序中任何地方都可访问。	
+-verbose:class
+-verbose:gc
+-verbose:jni
+-version:release	打印详细信息，目前支持打印类加载信息:class、垃圾收集信息:gc、以及本地方法调用信息:jni，如果选择了此选项，则JVM会在命令行打印出上述信息；-version:release指定class或者jar运行时需要的jdk版本信息；若指定版本未找到，则以能找到的系统默认jdk版本执行；一般情况下，对于jar文件，可以在 manifest文件中指定需要的版本信息，而不是在命令行。
+release中可以指定单个版本，也可以指定一个列表，中间用空格隔开，且支持复杂组合，比如：
+-version:"1.5.0_04 1.5*&1.5.1_02+"
+指定class或者jar需要jdk版本为1.5.0_04或者是1.5系列中比1.5.1_02更高的所有版本。	对于测试中的系统可以通过打开:gc开关，查看JVM每次垃圾收集的详细信息来判断系统内存消耗情况，如果系统垃圾收集的很频繁，而且每次都回收了大量的内存，则说明系统内存消耗很大，对象的创建和湮灭很频繁，而如果堆内存一直保持着增长的话，说明可能存在内存“泄漏”。
+-version
+-showversion	-version选项是显示版本信息后JVM退出
+-showversion选项是显示版本信息后JVM继续运行	 
+-esa
+-enableassertions	打开系统中每个类的断言开关
+上述参数就用来设置jvm是否启动断言机制（从JDK 1.4开始支持），缺省时jvm关闭断言机制。
+用-ea 可打开断言机制，不加<packagename>和classname时运行所有包和类中的断言，如果希望只运行某些包或类中的断言，可将包名或类名加到-ea之后。例如要启动包com.wombat.fruitbat中的断言，可用命令java -ea:com.wombat.fruitbat...<Main Class>。 	该选项用于程序开发、调试过程
+-da
+-disableassertions	关闭系统中每个类的断言开关
+用来设置jvm关闭断言处理，packagename和classname的使用方法和-ea相同，jvm默认就是关闭状态。
+该参数一般用于相同package内某些class不需要断言的场景，比如com.wombat.fruitbat需要断言，但是 com.wombat.fruitbat.Brickbat该类不需要，则可以如下运行：
+java -ea:com.wombat.fruitbat...-da:com.wombat.fruitbat.Brickbat <Main Class>。	该选项用于程序开发、调试过程
+-enablesystemassertions 
+-esa	 激活系统类的断言。	 
+-disablesystemassertions 
+-dsa	关闭系统类的断言。	
+-jar	指定以jar包的形式执行一个应用程序。
+要这样执行一个应用程序，必须让jar包的manifest文件中声明初始加载的Main-class，当然那Main-class必须有public static void main(String[] args)方法。	
+-javaagent:jarpath[=options]	指定jvm启动时装入java语言设备代理。
+Jarpath文件中的mainfest文件必须有Agent-Class属性。代理类也必须实现公共的静态public static void premain(String agentArgs, Instrumentation inst)方法（和main方法类似）。当jvm初始化时，将按代理类的说明顺序调用premain方法；具体参见 java.lang.instrument软件包的描述。	
+表1 JVM 标准参数集
+	3.2 Java虚拟机扩展参数
+所谓的Java虚拟机非标准参数指的就是一些特有的虚拟机实现所支持，下面介绍一些扩展的虚拟机运行参数，其中对Hotspot VM相关的参数是我们进行性能调整的重点。
+参数	使用说明	备注
+-Xmixed	JVM执行模式的设置参数，混合模式即支持Hotspot即时编译的运行模式	支持Hotspot的JVM缺省都是运行于混合模式的。
+-Xint	设置JVM的执行模式为解释执行模式，纯解释执行的JVM对多数应用来说基本上时没有意义的，仅仅可能会在一些嵌入式系统中应用	 
+-Xbootclasspath	设置初始类装载器的装载路径	 
+-Xnoclassgc	设置不执行类垃圾收集	 
+-Xincgc	设置是否启动火车垃圾收集算法	 
+-Xloggc:<file>	设置是否将GC信息写入日志文件	 
+-Xbatch	设置不执行后台编译	 
+-Xms<size>	设置JVM启动时初始内存堆的大小	 
+-Xmx<size>	设置JVM启动后动态申请堆内存的最大堆空间	 
+-Xss<size>	设置JVM最大线程栈的空间大小	 
+-Xprof	是否打印输出性能统计数据	 
+-Xrunhprof	设置是否启动heap、cpu等性能统计监控功能（详细见下表）	 
+-Xdebug	设置是否启动远程调试功能	 
+-Xfuture	 	 
+-Xrs	设置是否屏蔽操作系统信号	 
+-Xcheck:jni	设置对于本地调用是否执行额外检查	 
+表2 JVM 扩展参数集
+Java Hotspot、GC相关参数介绍，对于以 –X 打头的非标准参数，是不能保证在每个JVM的实现中都支持的，而且关于这些参数行为的改变都不会得到通知，而对于以 –XX 打头的非标准参数来说，它们中大多数都是和具体的操作系统支持有关的，而且有些甚至需要特殊的系统访问权限，而且这些参数也是遵循上述的改变不通知原则的。在使用中需要特别注意。
+参数	使用说明	备注
+-Xincgc	在垃圾收集中使用火车算法	 
+-Xnoincgc	在垃圾收集中不使用火车算法	 
+-XX:MaxHeapFreeRatio
+=<Maximum>	JVM中堆空间的最大空闲百分比，缺省为70%，GC停止回收空间的上限值	即：一旦当前堆内存空闲空间百分比超过总空间70％时，GC暂停垃圾收集
+-X:MinHeapFreeRation
+=<Minimum>	JVM中堆空间的最小空闲百分比，缺省为40%，GC开始回收空间的下限值	即：一旦当前内存堆中内存空闲小于40%时，GC则恢复垃圾收集
+-Xint	不启用即时编译（JIT）功能，仅仅解释执行	缺省为不选的
+-XX:+UseBoundThreads	绑定用户级线程（Solaris only），这个选项强制所有的Java线程在创建时都作为操作系统绑定的线程	这个参数用来是否将JVM用户线程绑定到Solaris内核线程
+-XX:+UseParallelGC	是否启用并行垃圾收集功能	 
+-XX:+UseAltSigs	 	 
+-XX:+PrintCompilation	是否跟踪打印JIT编译信息	 
+-XX:+UseV8InstrsOnly	 	 
+-XX:MaxInlineSize=size	限制动态编译的内联函数的虚拟机指令的最大数量	 
+-XX:FreqInlineSize=size	限制经常使用的动态编译的函数的虚拟机指令的最大数量，	 
+-XX:-AllowUserSignal
+Handlers	允许用户在应用层设置信号处理回调函数	 
+-XX:AltStackSize=16384	预备信号栈的大小	 
+-XX:+MaxFDLimit	设置JVM进程打开最大文件句柄数（Solaris only）	 
+-XX:-UseLWPSynchroniza
+tion	使用操作系统提供的轻量级线程LWP同步来代替基于Java虚拟机的线程的同步	该参数的使用使得JVM 将线程同步的控制交由Solaris内核处理，从而代替了JVM内部的线程同步机制
+-XX:+UseThreadPriorities	设置是否使用本地线程优先级	 
+-XX:-CITime	设置Hotspot的一次即时编译所需要的最大时间	 
+-XX:-PrintTenuring
+Distribution	打印使用年限	 
+-XX:+DisableExplicitGC	屏蔽程序主动垃圾收集的函数system.gc()	 
+-XX:TargetSurvivorRatio
+=50	设置执行垃圾收集GC后期望的空闲空间百分比	 
+-XX:CompileThreshold
+=10000	设置方法是否进行即时编译的调用次数的下限值，-server选项的缺省值为10000，-client选项的缺省值为1500	即：当该方法的被调用测试多于该值时，则该方法就会被JIT即时编译器编译成机器代码在内存中执行
+-XX:MaxNewSize=32m	设置新一代的最大值	按代垃圾收集中使用
+-XX:NewRatio=2	新生代与老一代空间的比率，SUN Parc –server中是2：1，Intel中是12：1	 
+-XX:NewSize=2228224	新一代的缺省申请空间的值	对于大行应用服务器系统这个值2K一般情况下需要调整大一些
+-XX:-UseSpinning
+-XX:PreBlockSpin=10	 	 
+-XX:ReservedCodeCache
+Size=32m	设置内存中保留代码缓冲区的大小	 
+-XX:SurvivorRatio=64	 	 
+-XX:ThreadStackSize
+=512	每个线程栈大小（K），等于0时表示使用缺省值【Sparc: 512K，Solaris Intel: 256K，Sparc 64bit: 1024 其他的都为 0】	 
+-XX:+UseTLAB	是否使用线程本地对象分配策略，SUN Sparc –server时为true，其他为false	 
+-XX:-UseISM	如果使用ISM选项可以获得如下的几个好处：1、使用大内存页来代替操作系统缺省的8K的页模式；
+2、将一些内存页锁定在内存中，而不必换出到硬盘	如果系统使用ISM则系统文件/etc/system需要添加如下配置：
+set shmsys:
+shminfo_shmmax
+=0xffffffff
+set shmsys:
+shminfo_shmseg=32
+表3 JVM GC/Hotspot相关参数集，这些参数可以被松散的聚合成三类：
+行为参数 （Behavioral Options）：用于改变jvm的一些基础行为；
+性能调优 （Performance Tuning）：用于jvm的性能调优；
+调试参数 （Debugging Options）：一般用于打开跟踪、打印、输出等jvm参数，用于显示jvm更加详细的信息； 
+由于sun官方文档中对各参数的描述也都非常少（大多只有一句话），而且大多涉及OS层面的东西，很难描述清楚，所以以下是挑选了一些我们开发中可能会用得比较多的配置项，若需要查看所有参数列表，可以点击HotSpot VM Specific Options .查看原文； 
+行为参数 ： 
+参数及其默认值 	描述 
+-XX:-DisableExplicitGC 	禁止调用System.gc()；但jvm的gc仍然有效 
+-XX:+MaxFDLimit 	最大化文件描述符的数量限制 
+-XX:+ScavengeBeforeFullGC 	新生代GC优先于Full GC执行 
+-XX:+UseGCOverheadLimit 	在抛出OOM之前限制jvm耗费在GC上的时间比例 
+-XX:-UseConcMarkSweepGC 	对老生代采用并发标记交换算法进行GC 
+-XX:-UseParallelGC 	启用并行GC 
+-XX:-UseParallelOldGC 	对Full GC启用并行，当-XX:-UseParallelGC启用时该项自动启用 
+-XX:-UseSerialGC 	启用串行GC 
+-XX:+UseThreadPriorities 	启用本地线程优先 
+     上面表格中黑体的三个参数代表着jvm中GC执行的三种方式，即 串行、并行、并发 ；
+串行（SerialGC） 是jvm的默认GC方式，一般适用于小型应用和单处理器，算法比较简单，GC效率也较高，但可能会给应用带来停顿；
+并行（ParallelGC） 是指GC运行时，对应用程序运行没有影响，GC和app两者的线程在并发执行，这样可以最大限度不影响app的运行；
+并发（ConcMarkSweepGC） 是指多个线程并发执行GC，一般适用于多处理器系统中，可以提高GC的效率，但算法复杂，系统消耗较大； 
+性能调优 参数列表： 
+参数及其默认值 	描述 
+-XX:LargePageSizeInBytes=4m 	设置用于Java堆的大页面尺寸 
+-XX:MaxHeapFreeRatio=70 	GC后java堆中空闲量占的最大比例 
+-XX:MaxNewSize=size 	新生成对象能占用内存的最大值 
+-XX:MaxPermSize=64m 	老生代对象能占用内存的最大值 
+-XX:MinHeapFreeRatio=40 	GC后java堆中空闲量占的最小比例 
+-XX:NewRatio=2 	新生代内存容量与老生代内存容量的比例 
+-XX:NewSize=2.125m 	新生代对象生成时占用内存的默认值 
+-XX:ReservedCodeCacheSize=32m 	保留代码占用的内存容量 
+-XX:ThreadStackSize=512 	设置线程栈大小，若为0则使用系统默认值 
+-XX:+UseLargePages 	使用大页面内存 
+我们在日常性能调优中基本上都会用到以上黑体的这几个属性； 
+调试参数 列表： 
+参数及其默认值 	描述 
+-XX:-CITime 	打印消耗在JIT编译的时间 
+-XX:ErrorFile=./hs_err_pid<pid>.log 	保存错误日志或者数据到文件中 
+-XX:-ExtendedDTraceProbes 	开启solaris特有的dtrace探针 
+-XX:HeapDumpPath=./java_pid<pid>.hprof 	指定导出堆信息时的路径或文件名 
+-XX:-HeapDumpOnOutOfMemoryError 	当首次遭遇OOM时导出此时堆中相关信息 
+-XX:OnError="<cmd args>;<cmd args>" 	出现致命ERROR之后运行自定义命令 
+-XX:OnOutOfMemoryError="<cmd args>;<cmd args>" 	当首次遭遇OOM时执行自定义命令 
+-XX:-PrintClassHistogram 	遇到Ctrl-Break后打印类实例的柱状信息，与jmap -histo功能相同 
+-XX:-PrintConcurrentLocks 	遇到Ctrl-Break后打印并发锁的相关信息，与jstack -l功能相同 
+-XX:-PrintCommandLineFlags 	打印在命令行中出现过的标记 
+-XX:-PrintCompilation 	当一个方法被编译时打印相关信息 
+-XX:-PrintGC 	每次GC时打印相关信息 
+-XX:-PrintGC Details 	每次GC时打印详细信息 
+-XX:-PrintGCTimeStamps 	打印每次GC的时间戳 
+-XX:-TraceClassLoading 	跟踪类的加载信息 
+-XX:-TraceClassLoadingPreorder 	跟踪被引用到的所有类的加载信息 
+-XX:-TraceClassResolution 	跟踪常量池 
+-XX:-TraceClassUnloading 	跟踪类的卸载信息 
+-XX:-TraceLoaderConstraints 	跟踪类加载器约束的相关信息 
+当系统出现问题的时候，又不能使用外部跟踪工具（比如JProfiler……）的情况下，以上的这些参数就会发挥重大作用了，比如dump堆信息、打印并发锁…… 注：即时编译是Hotspot中的概念，按代收集，火车算法等是属于GC中的概念。
+性能统计信息配置参数集
+参数	使用说明	备注
+heap=<value>	打印JVM运行时堆统计信息到文件	 
+cpu=<value>	打印JVM运行时CPU使用统计信息到文件	打印每个执行的方法的CPU占用百分比
+monitor=<value>	统计JVM Socket连接情况	 
+format=<value>	设置打印输出的格式为ascii或者二进制格式	缺省为文本方式
+file=<value>	指定打印输出的文件名字	缺省输出到java.hprof.txt文件中
+net=<value>	统计通过Socket发送消息的情况	 
+depth=<value>	指定跟踪的栈深度，缺省为4	 
+cutoff=<value>	 	 
+lineno=<value>	指定跟踪的行数	 
+thread=<value>	指定是否跟踪线程	 
+doe=<value>	设置是否在JVM退出时导出所有的统计信息	缺省为真
+ 	 	 
+表4 JVM 性能统计参数集
+注：对于一个代码规模量很大的服务器应用程序来说，如果通过这样的方式查看JVM运行统计信息的话，这样最后得到的统计数据将是一个非常庞大的文件，根据这样的统计文件来分析性能的话将是非常累人的工作，幸好现在有一些商用的Java Profile软件，如：Jprobe，OptimizeIT等，关于这些工具的讨论不在本文范畴之内，有兴趣的话可以参见本人写的一片关于Jprobe原理和使用的文章。
+	4 JAVA应用性能测试调优经验总结
+	4.1 GC调优参数的使用
+JVM中按代收集算法的基本原则是这样的，JVM堆空间被分成许多子堆，每个子堆用于存放不同代的对象，而当所有已经存在的堆中的各代对象都不能继续回收时，则新的子堆会被分配，用于存放新一代的对象，下面的这两个参数就是为按代收集设计的：
+-XX:NewRatio=2 //新生代于老一代的空间比率
+-XX:NewSize=2228224 //缺省时2K，对于应用服务器系统建议调整的大一些4K或8K
+-XX:MaxNewSize //新生代的最大空间
+-XX:MaxPermSize=64m //老一代的最大空间，缺省为64M，建议增加
+-XX:SurvivorRatio //GC时代子堆中的年老对象的比率
+-Xxincgc //是否在垃圾收集时启用火车算法
+-XX:+UseConcMarkSweepGC //是否启用并发收集算法
+-Xverifyheap //仅仅用于Debug版本，用于对GC数据分析
+-XX:TargetSurvivorRatio=50 //GC收集后期望得到的被老一代占用的空间，建议不调整
+因为垃圾收集只是在各代的子堆满了的时候发生，总的堆的空间状况也会对垃圾收集产生重要的影响，JVM向操作系统申请更多的堆内存空间的前提是，堆中所有的年老的代的子堆都已经满了。
+-Xms //设置最小初始堆空间的大小
+-Xmx //设置最大堆空间的大小
+-XX:MinFreeHeapRatio=40 //GC后JVM堆空间向操作系统缩小的比率。
+-XX:MaxHeapFreeRatio＝70 //GC后JVM堆空间向操作系统扩张的比率。
+-XX:+AggressiveHeap //用于JVM运行于大内存模式下，JVM的堆空间至少在1G以
+//上，与-Xms、-Xmx不同时使用，慎用！会导致JVM极度消
+//耗内存
+在U-NICA这样的后台大型应用服务器系统来说，我们就采用了通过调整初始堆内存空间、堆增长量、增加新生代空间配置、使用并发收集算法、火车算法等方法来使的系统的垃圾收集能力得以优化。而且在具体实际测试过程中也发现这些调整通常是有效而且成本低廉的。
+	4.2 JIT调优参数的使用
+从解释执行到即时编译，再到热点编译JVM走在一条不断优化的道路上，今天我们通过一些简单的参数设置就可以获得以前梦想的性能，对于Java用户来说，这的确是一条捷径：
+-server //很多Hotspot的能力都是通过这个选项打开的，对于大型服
+//务器尤为重要，这里可以启动热点编译功能
+-Xmaxjitcodesize32m //设置即时编译代码的最大尺寸
+-Xint //纯解释执行，一般情况下不用它
+-Xtime //不太清楚如何使用，总之是指定JIT的时间
+-XX:+DisableExplicitGC //是否屏蔽应用层的垃圾收集请求
+-XX:-UseISM //使用大内存页模式则会减少GC的时间
+-XX:-UseMPSS //在使用ISM选项的同时不使用该选项，否则ISM无效
+	4.3 Java线程调优参数的使用
+-XX:-UseBoundThreads //如果你的系统是Solaris8以上，尽情使用这个参数吧，操作
+//系统内核的线程调度总是要必应用层的调度快一些
+-XX:-UseLWPSynchronization //这个参数也是同样的，让操作系统来做线程同步这些工作
+-XX:+UseThreadPriorities //是否采用操作系统内部定义的线程优先级
+-XX:CompileThreshold=10000 //如果你想让你的系统更早变快一些，而且你的内存足够多
+//的话，可以将这个参数值调小
+-XX:PreBlockSpin=10 //仅仅用于Linux版本
+-XX:ThreadStackSize=512 //设置线程栈的大小，如果你的应用中有比较大的循环或递
+//归时使用。
+-XX:+UseTLAB //是否在线程的栈空间内分配对象，如果你的内存较大的话，
+//并且配置了比较大的线程栈空间，则使用这个参数会使得
+//临时&本地对象的申请和释放比较快。
+	5 结束语
+Java的优势在于稳定性和良好的可移植性，它将很多需要程序员完成的精细的工作交由JVM完成，曾经有这样一个比喻说，如果这世界上80％的程序员都是能够胜任自己管理内存的工作的话，那么就让Java消失吧。话不一定对，但在一定程度上放映了一种现状，我们大多数的程序员还是主要关注于他的应用逻辑的开发。我这里描述的一些东西有的是理解自参考资料，有些则是自己的主观臆断，而有些东西我至今还不太理解，所以不正确之处在所难免。希望能够抛砖引玉，各位有心情、有兴趣的同事多多讨论。
+	6 参考文献
+《Inside Java Virtual Machine》
+《JDK1.4.2 Document》
+《JDK FAQ》
+
