@@ -1,0 +1,51 @@
+XmlVoUtils, ThreadLocal , javaAssist, testNG, 热部署,扩展点,sftp,消息队列.DDS.redis.zk.activiti Camunda BPM,元数据,ebus,
+软件: PowerGREP,  everything, json viewer, notepad++,eDiary,SoapUI 5.0.0,SSH Secure Shell Client,RedisDesktopManager,plsqldev,JAD,
+POWERDESIGNER ,Altova XMLSpy ,
+eclipse 常用的插件:
+1, 直接打开源码目录.
+2,activiti-designer
+
+lss软件安装包. netrix-LSS
+
+
+https://github.com/daohu527
+
+1, 日志滚动, 动态打开关闭.
+2, 国际化
+
+
+http://www.saxproject.org
+
+public static ViewObject unmarshal(String content, String voTypeName)
+    {
+        if(StringUtils.isEmpty(content))
+            return null;
+        EntityDefinition voDef = getXmlVODef(voTypeName);
+        EntityXmlHandler handler;
+        try
+        {
+            handler = new EntityXmlHandler(voDef);
+            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+            xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            xmlReader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            xmlReader.setContentHandler(handler);
+            xmlReader.parse(new InputSource(new StringReader(content)));
+            int isEntityData = content.indexOf("entity-data");
+            if(isEntityData < 0)
+                return handler.getResult();
+        }
+        catch(Exception e)
+        {
+            String subContent = content;
+            if(subContent.length() > 50)
+                subContent = content.substring(0, 50);
+            DEBUGGER.error((new StringBuilder()).append("Could not parse XML content to entity, EntityName is : ").append(voTypeName).toString());
+            throw new BdfException("405191673", new Object[] {
+                voTypeName
+            }, e);
+        }
+        return (ViewObject)handler.getResults().get(0);
+    }
+
+ThreadLocal  javaAssist
